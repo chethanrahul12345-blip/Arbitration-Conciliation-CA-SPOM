@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADR Quiz — CA Final · Law</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#002060;--navy2:#001848;--navy3:#00307a;--navy-lt:#003590;
+  --card:#ffffff;--card2:#f4f6fb;--bg:#eef1f7;
+  --border:#c8d0e4;--border2:#b0bcd8;
+  --text:#0d1b2a;--text2:#3a4a6b;--text3:#6b7fa8;
+  --green:#1a7a3c;--green-lt:#e6f4ec;
+  --red:#b91c1c;--red-lt:#fef2f2;
+  --amber:#b45309;--amber-lt:#fffbeb;
+  --sh:0 1px 6px rgba(0,32,96,.08);
+  --sh-md:0 4px 18px rgba(0,32,96,.13);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'EB Garamond',Georgia,serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.65;}
+
+/* NAV */
+#nav{position:fixed;top:0;left:0;right:0;z-index:300;background:var(--navy);border-bottom:3px solid var(--navy-lt);display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:52px;}
+.nav-brand{font-family:'EB Garamond';font-size:16px;font-weight:700;color:#fff;letter-spacing:.5px;white-space:nowrap;}
+.nav-brand span{color:rgba(255,255,255,.45);font-size:11px;font-family:'EB Garamond';letter-spacing:1.5px;margin-left:10px;}
+.nav-tabs{display:flex;gap:1px;overflow-x:auto;scrollbar-width:none;}
+.nav-tabs::-webkit-scrollbar{display:none;}
+.ntab{background:transparent;border:none;color:rgba(255,255,255,.5);font-family:'EB Garamond';font-size:12px;font-weight:600;padding:6px 14px;cursor:pointer;border-radius:3px;transition:.2s;white-space:nowrap;letter-spacing:.3px;}
+.ntab:hover{color:#fff;background:rgba(255,255,255,.1);}
+.ntab.active{background:#fff;color:var(--navy);font-weight:700;}
+.nav-action{display:flex;gap:8px;flex-shrink:0;}
+.nbtn{font-size:11px;font-weight:700;padding:6px 14px;border:none;border-radius:3px;cursor:pointer;transition:.2s;font-family:'EB Garamond';}
+.nbtn-gold{background:#fff;color:var(--navy);}
+.nbtn-ghost{background:transparent;color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.25);}
+.nbtn-ghost:hover{border-color:#fff;color:#fff;}
+
+/* COVER */
+#cover{min-height:100vh;background:var(--navy);padding-top:52px;display:flex;flex-direction:column;}
+.cover-inner{flex:1;display:grid;grid-template-columns:1fr 360px;min-height:calc(100vh - 52px);}
+.cv-left{padding:52px 56px 40px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;}
+.cv-left::before{content:'';position:absolute;top:-100px;right:-80px;width:500px;height:500px;background:radial-gradient(circle,rgba(255,255,255,.04) 0%,transparent 65%);pointer-events:none;}
+.cv-left::after{content:'ADR';position:absolute;bottom:-60px;left:-20px;font-family:'EB Garamond';font-size:280px;font-weight:800;color:rgba(255,255,255,.025);line-height:1;pointer-events:none;letter-spacing:-10px;}
+.cv-eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:28px;}
+.cv-badge{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.8);font-size:9px;font-weight:700;font-family:'EB Garamond';padding:4px 12px;border-radius:2px;letter-spacing:2px;text-transform:uppercase;}
+.cv-conf{color:rgba(255,255,255,.35);font-size:11px;letter-spacing:1px;}
+.cv-title{margin-bottom:18px;}
+.cv-title .l1{font-family:'EB Garamond';font-size:clamp(38px,5.5vw,76px);font-weight:800;color:#fff;line-height:.92;display:block;}
+.cv-title .l2{font-family:'EB Garamond';font-size:clamp(38px,5.5vw,76px);font-weight:400;font-style:italic;color:rgba(255,255,255,.6);line-height:.92;display:block;}
+.cv-title .l3{font-family:'EB Garamond';font-size:clamp(12px,1.4vw,16px);font-weight:400;color:rgba(255,255,255,.35);letter-spacing:4px;text-transform:uppercase;margin-top:16px;display:block;}
+.cv-desc{font-size:13.5px;color:rgba(255,255,255,.45);line-height:1.8;max-width:480px;padding-left:14px;border-left:2px solid rgba(255,255,255,.2);margin-bottom:32px;}
+.cv-process-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;}
+.cpg{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:4px;padding:11px 14px;display:flex;align-items:center;gap:9px;transition:.2s;cursor:default;}
+.cpg:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.2);}
+.cpg-icon{font-size:16px;flex-shrink:0;}
+.cpg-name{font-size:12px;font-weight:600;color:rgba(255,255,255,.8);}
+.cpg-count{font-size:10px;color:rgba(255,255,255,.35);margin-top:1px;}
+.cv-footer{display:flex;align-items:center;justify-content:space-between;padding-top:20px;border-top:1px solid rgba(255,255,255,.1);}
+.cv-footer-co{font-family:'EB Garamond';font-size:15px;font-weight:600;color:#fff;}
+.cv-footer-meta{font-size:10.5px;color:rgba(255,255,255,.3);text-align:right;line-height:1.7;}
+.cv-right{background:rgba(0,0,0,.15);border-left:1px solid rgba(255,255,255,.08);padding:52px 28px 40px;display:flex;flex-direction:column;overflow-y:auto;}
+.cv-right h3{font-family:'EB Garamond';font-size:11px;color:rgba(255,255,255,.25);letter-spacing:3px;text-transform:uppercase;margin-bottom:20px;}
+.cv-div{height:1px;background:rgba(255,255,255,.07);margin:12px 0;}
+.action-btn{font-size:11.5px;font-weight:600;font-family:'EB Garamond';padding:6px 16px;border-radius:3px;border:1px solid var(--border2);background:#fff;color:var(--navy);cursor:pointer;transition:.2s;}
+.action-btn:hover{background:var(--navy);color:#fff;border-color:var(--navy);}
+.action-btn.primary{background:var(--navy);color:#fff;border-color:var(--navy);}
+.action-btn.primary:hover{background:var(--navy2);}
+
+/* MAIN */
+#main{background:var(--bg);}
+.tab-bar{background:var(--navy);padding:0 44px;display:flex;gap:0;overflow-x:auto;scrollbar-width:none;position:sticky;top:52px;z-index:200;border-bottom:2px solid var(--navy3);}
+.tab-bar::-webkit-scrollbar{display:none;}
+.tbtn{background:transparent;border:none;color:rgba(255,255,255,.45);font-family:'EB Garamond';font-size:12px;font-weight:600;padding:11px 16px;cursor:pointer;transition:.2s;white-space:nowrap;letter-spacing:.3px;border-bottom:2px solid transparent;position:relative;top:2px;}
+.tbtn:hover{color:rgba(255,255,255,.85);}
+.tbtn.active{color:#fff;border-bottom-color:#fff;}
+.tsec{display:none;}
+.tsec.active{display:block;}
+.sw{padding:40px 44px;}
+
+/* section header */
+.sh{margin-bottom:30px;padding-bottom:18px;border-bottom:2px solid var(--navy);}
+.sh-tag{font-size:10px;font-weight:700;font-family:'EB Garamond';color:var(--navy);letter-spacing:3px;text-transform:uppercase;margin-bottom:5px;}
+.sh-title{font-family:'EB Garamond';font-size:30px;font-weight:700;color:var(--navy);line-height:1.1;}
+.sh-sub{color:var(--text2);font-size:13.5px;margin-top:5px;max-width:700px;}
+.sh-actions{display:flex;gap:8px;margin-top:12px;}
+
+/* KPI */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}
+.kpi{background:var(--navy);border-radius:6px;padding:20px 22px;box-shadow:var(--sh-md);position:relative;overflow:hidden;}
+.kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:rgba(255,255,255,.3);}
+.kpi.k-green::after{background:var(--green);}
+.kpi.k-amber::after{background:var(--amber);}
+.kpi.k-blue::after{background:#4472c4;}
+.kpi-icon{font-size:22px;margin-bottom:8px;}
+.kpi-val{font-family:'EB Garamond';font-size:40px;font-weight:700;color:#fff;line-height:1;}
+.kpi-lbl{font-size:11px;font-weight:600;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+
+/* obs banner */
+.obs-banner{background:#e8edf8;border-left:4px solid var(--navy);border-radius:0 4px 4px 0;padding:13px 16px;margin-bottom:20px;display:flex;gap:12px;align-items:flex-start;}
+.obs-icon{font-size:18px;flex-shrink:0;margin-top:2px;}
+.obs-title{font-size:13px;font-weight:700;font-family:'EB Garamond';color:var(--navy);margin-bottom:3px;}
+.obs-text{font-size:12.5px;color:var(--text2);line-height:1.65;}
+
+/* QUIZ AREA */
+.quiz-wrap{max-width:860px;}
+.q-card{background:var(--card);border-radius:6px;box-shadow:var(--sh);border:1px solid var(--border);margin-bottom:18px;overflow:hidden;transition:.2s;}
+.q-head{background:var(--navy);padding:12px 20px;display:flex;align-items:flex-start;gap:14px;}
+.q-num{font-family:'EB Garamond';font-size:11px;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:2px;text-transform:uppercase;white-space:nowrap;margin-top:3px;min-width:28px;}
+.q-text{font-family:'EB Garamond';font-size:15px;font-weight:600;color:#fff;line-height:1.5;}
+.q-body{padding:16px 20px;}
+.opt-list{display:flex;flex-direction:column;gap:8px;margin-bottom:0;}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-radius:4px;border:1px solid var(--border);cursor:pointer;transition:.15s;background:var(--card2);}
+.opt:hover{border-color:var(--navy);background:#e8edf8;}
+.opt.selected{border-color:var(--navy);background:#dce5f5;}
+.opt.correct{border-color:var(--green);background:var(--green-lt);}
+.opt.wrong{border-color:var(--red);background:var(--red-lt);}
+.opt.reveal-correct{border-color:var(--green);background:var(--green-lt);}
+.opt-letter{font-family:'EB Garamond';font-size:11px;font-weight:700;color:var(--text3);border:1px solid var(--border2);border-radius:2px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:.15s;}
+.opt.selected .opt-letter{border-color:var(--navy);color:var(--navy);}
+.opt.correct .opt-letter{border-color:var(--green);color:var(--green);background:rgba(26,122,60,.1);}
+.opt.wrong .opt-letter{border-color:var(--red);color:var(--red);background:rgba(185,28,28,.1);}
+.opt.reveal-correct .opt-letter{border-color:var(--green);color:var(--green);background:rgba(26,122,60,.1);}
+.opt-text{font-family:'EB Garamond';font-size:13.5px;color:var(--text);line-height:1.5;}
+.feedback{margin-top:12px;padding:10px 14px;border-radius:4px;font-size:12.5px;line-height:1.6;display:none;}
+.feedback.show{display:block;}
+.feedback.f-correct{background:var(--green-lt);border-left:3px solid var(--green);color:var(--green);}
+.feedback.f-wrong{background:var(--red-lt);border-left:3px solid var(--red);color:var(--red);}
+
+/* score panel */
+.score-panel{background:var(--navy);border-radius:6px;padding:24px 28px;margin-bottom:24px;box-shadow:var(--sh-md);display:none;}
+.score-panel.show{display:block;}
+.sp-title{font-family:'EB Garamond';font-size:11px;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;}
+.sp-score{font-family:'EB Garamond';font-size:52px;font-weight:800;color:#fff;line-height:1;}
+.sp-sub{font-size:13px;color:rgba(255,255,255,.45);margin-top:4px;}
+.sp-bar-wrap{background:rgba(255,255,255,.1);border-radius:3px;height:6px;margin:14px 0 10px;overflow:hidden;}
+.sp-bar{height:100%;background:var(--green);border-radius:3px;transition:width .6s ease;}
+.sp-actions{display:flex;gap:10px;margin-top:16px;}
+
+/* ctrl bar */
+.ctrl-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:20px;}
+.ctrl-row select{background:var(--card2);border:1px solid var(--border);border-radius:3px;padding:8px 12px;font-family:'EB Garamond';font-size:13px;color:var(--text);outline:none;cursor:pointer;}
+
+.tag{font-size:9.5px;font-weight:700;font-family:'EB Garamond';padding:2px 8px;border-radius:2px;display:inline-block;letter-spacing:.3px;}
+.tag-green{background:var(--green-lt);color:var(--green);}
+.tag-amber{background:var(--amber-lt);color:var(--amber);}
+.tag-blue{background:#e8edf8;color:var(--navy);}
+.tag-gray{background:#f1f4f9;color:var(--text2);}
+
+/* progress */
+.progress-row{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.prog-wrap{flex:1;background:var(--border);border-radius:3px;height:5px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--navy);border-radius:3px;transition:width .3s ease;}
+.prog-txt{font-size:11px;color:var(--text3);font-weight:600;white-space:nowrap;}
+
+/* footer */
+.page-footer{background:var(--navy);padding:16px 44px;display:flex;align-items:center;justify-content:space-between;font-size:11px;font-family:'EB Garamond';color:rgba(255,255,255,.35);}
+.page-footer strong{color:rgba(255,255,255,.75);}
+
+@media(max-width:700px){
+  .cover-inner{grid-template-columns:1fr;}
+  .cv-right{display:none;}
+  .kpi-row{grid-template-columns:1fr 1fr;}
+  .sw{padding:20px 16px;}
+  .tab-bar{padding:0 12px;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-brand">CA Final · Law <span>ADR Quiz · Arbitration & Conciliation</span></div>
+  <div class="nav-tabs">
+    <button class="ntab active" onclick="showSection('cover',this)">Cover</button>
+    <button class="ntab" onclick="showSection('ch1',this)">Ch. 1 — Introduction</button>
+    <button class="ntab" onclick="showSection('ch2',this)">Ch. 2 — Arbitration</button>
+    <button class="ntab" onclick="showSection('ch3',this)">Ch. 3 — Foreign Awards</button>
+    <button class="ntab" onclick="showSection('ch4',this)">Ch. 4 — Conciliation</button>
+    <button class="ntab" onclick="showSection('all',this)">All Chapters</button>
+  </div>
+  <div class="nav-action">
+    <button class="nbtn nbtn-ghost" onclick="resetAll()">↺ Reset</button>
+  </div>
+</nav>
+
+<!-- COVER -->
+<section id="cover" style="display:flex;">
+  <div class="cover-inner">
+    <div class="cv-left">
+      <div class="cv-top">
+        <div class="cv-eyebrow">
+          <span class="cv-badge">Alternative Dispute Resolution</span>
+          <span class="cv-conf">CA Final · Paper 4 · Law</span>
+        </div>
+        <div class="cv-title">
+          <span class="l1">ADR &amp; Arbitration</span>
+          <span class="l2">Practice Quiz</span>
+          <span class="l3">Arbitration &amp; Conciliation Act, 1996 · Mediation Act, 2023</span>
+        </div>
+        <p class="cv-desc">
+          MCQ-based practice covering <strong style="color:rgba(255,255,255,.7)">4 chapters</strong> — Introduction to ADR, Fundamentals of Arbitration, Enforcement of Foreign Awards, and Conciliation. Answers are revealed instantly with explanations.
+        </p>
+        <div class="cv-process-grid">
+          <div class="cpg"><span class="cpg-icon">📝</span><div><div class="cpg-name">Total Questions</div><div class="cpg-count">76 MCQs across 4 chapters</div></div></div>
+          <div class="cpg"><span class="cpg-icon">📚</span><div><div class="cpg-name">Chapters</div><div class="cpg-count">Introduction · Arbitration · Foreign · Conciliation</div></div></div>
+          <div class="cpg"><span class="cpg-icon">⚡</span><div><div class="cpg-name">Instant Feedback</div><div class="cpg-count">Correct / wrong revealed on click</div></div></div>
+          <div class="cpg"><span class="cpg-icon">🏆</span><div><div class="cpg-name">Score Tracker</div><div class="cpg-count">Chapter-wise &amp; cumulative score</div></div></div>
+        </div>
+      </div>
+      <div class="cv-footer">
+        <div class="cv-footer-co">Chethan Rahul Gurana</div>
+        <div class="cv-footer-meta">
+          <div>Arbitration &amp; Conciliation Act, 1996</div>
+          <div>Mediation Act, 2023</div>
+        </div>
+      </div>
+    </div>
+    <div class="cv-right">
+      <h3>Quick Start</h3>
+      <p style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.8;margin-bottom:18px;">Select a chapter to begin practising, or attempt all 76 questions together. Your score is tracked live.</p>
+      <div class="cv-div"></div>
+      <button class="action-btn primary" style="width:100%;margin-bottom:10px;" onclick="showSection('ch1',document.querySelectorAll('.ntab')[1])">→ Ch. 1 · Introduction (14 Qs)</button>
+      <button class="action-btn primary" style="width:100%;margin-bottom:10px;" onclick="showSection('ch2',document.querySelectorAll('.ntab')[2])">→ Ch. 2 · Arbitration (42 Qs)</button>
+      <button class="action-btn primary" style="width:100%;margin-bottom:10px;" onclick="showSection('ch3',document.querySelectorAll('.ntab')[3])">→ Ch. 3 · Foreign Awards (16 Qs)</button>
+      <button class="action-btn primary" style="width:100%;margin-bottom:10px;" onclick="showSection('ch4',document.querySelectorAll('.ntab')[4])">→ Ch. 4 · Conciliation (14 Qs)</button>
+      <div class="cv-div"></div>
+      <button class="action-btn" style="width:100%;" onclick="showSection('all',document.querySelectorAll('.ntab')[5])">→ All 76 Questions</button>
+    </div>
+  </div>
+</section>
+
+<!-- MAIN -->
+<div id="main" style="display:none;">
+  <div class="tab-bar">
+    <button class="tbtn" onclick="switchTab('t-ch1')">Ch. 1 — Introduction</button>
+    <button class="tbtn" onclick="switchTab('t-ch2')">Ch. 2 — Arbitration</button>
+    <button class="tbtn" onclick="switchTab('t-ch3')">Ch. 3 — Foreign Awards</button>
+    <button class="tbtn" onclick="switchTab('t-ch4')">Ch. 4 — Conciliation</button>
+    <button class="tbtn" onclick="switchTab('t-all')">All Chapters</button>
+  </div>
+
+  <!-- CH1 -->
+  <div class="tsec" id="t-ch1"><div class="sw">
+    <div class="sh">
+      <div class="sh-tag">Chapter 1</div>
+      <div class="sh-title">Introduction to ADR</div>
+      <div class="sh-sub">Arbitrability · Lok Adalat · Mediation · Negotiation · Gram Nyayalayas · 14 Questions</div>
+      <div class="sh-actions"><button class="action-btn" onclick="resetChapter('ch1')">↺ Reset Chapter</button></div>
+    </div>
+    <div id="score-ch1" class="score-panel"></div>
+    <div id="progress-ch1" class="progress-row" style="display:none;"><div class="prog-wrap"><div class="prog-fill" id="pf-ch1"></div></div><div class="prog-txt" id="pt-ch1"></div></div>
+    <div class="quiz-wrap" id="quiz-ch1"></div>
+  </div></div>
+
+  <!-- CH2 -->
+  <div class="tsec" id="t-ch2"><div class="sw">
+    <div class="sh">
+      <div class="sh-tag">Chapter 2</div>
+      <div class="sh-title">Fundamentals of Arbitration</div>
+      <div class="sh-sub">Arbitration &amp; Conciliation Act, 1996 · Agreements · Awards · Jurisdiction · 42 Questions</div>
+      <div class="sh-actions"><button class="action-btn" onclick="resetChapter('ch2')">↺ Reset Chapter</button></div>
+    </div>
+    <div id="score-ch2" class="score-panel"></div>
+    <div id="progress-ch2" class="progress-row" style="display:none;"><div class="prog-wrap"><div class="prog-fill" id="pf-ch2"></div></div><div class="prog-txt" id="pt-ch2"></div></div>
+    <div class="quiz-wrap" id="quiz-ch2"></div>
+  </div></div>
+
+  <!-- CH3 -->
+  <div class="tsec" id="t-ch3"><div class="sw">
+    <div class="sh">
+      <div class="sh-tag">Chapter 3</div>
+      <div class="sh-title">Enforcement of Certain Foreign Awards</div>
+      <div class="sh-sub">Ad hoc vs Institutional · Fast Track · Domestic vs International · 16 Questions</div>
+      <div class="sh-actions"><button class="action-btn" onclick="resetChapter('ch3')">↺ Reset Chapter</button></div>
+    </div>
+    <div id="score-ch3" class="score-panel"></div>
+    <div id="progress-ch3" class="progress-row" style="display:none;"><div class="prog-wrap"><div class="prog-fill" id="pf-ch3"></div></div><div class="prog-txt" id="pt-ch3"></div></div>
+    <div class="quiz-wrap" id="quiz-ch3"></div>
+  </div></div>
+
+  <!-- CH4 -->
+  <div class="tsec" id="t-ch4"><div class="sw">
+    <div class="sh">
+      <div class="sh-tag">Chapter 4</div>
+      <div class="sh-title">Conciliation</div>
+      <div class="sh-sub">Conciliator Role · Settlement Agreement · Section 66, 70, 74, 76 · 14 Questions</div>
+      <div class="sh-actions"><button class="action-btn" onclick="resetChapter('ch4')">↺ Reset Chapter</button></div>
+    </div>
+    <div id="score-ch4" class="score-panel"></div>
+    <div id="progress-ch4" class="progress-row" style="display:none;"><div class="prog-wrap"><div class="prog-fill" id="pf-ch4"></div></div><div class="prog-txt" id="pt-ch4"></div></div>
+    <div class="quiz-wrap" id="quiz-ch4"></div>
+  </div></div>
+
+  <!-- ALL -->
+  <div class="tsec" id="t-all"><div class="sw">
+    <div class="sh">
+      <div class="sh-tag">Full Test</div>
+      <div class="sh-title">All Chapters — 76 Questions</div>
+      <div class="sh-sub">Complete ADR question bank · Ch. 1 through Ch. 4</div>
+      <div class="sh-actions"><button class="action-btn" onclick="resetChapter('all')">↺ Reset All</button></div>
+    </div>
+    <div id="score-all" class="score-panel"></div>
+    <div id="progress-all" class="progress-row" style="display:none;"><div class="prog-wrap"><div class="prog-fill" id="pf-all"></div></div><div class="prog-txt" id="pt-all"></div></div>
+    <div class="quiz-wrap" id="quiz-all"></div>
+  </div></div>
+
+</div>
+
+<div class="page-footer">
+  <div><strong>Chethan Rahul Gurana</strong> · CA Final · Paper 4 · Law · ADR &amp; Arbitration Practice Quiz</div>
+  <div>Arbitration &amp; Conciliation Act, 1996 · Mediation Act, 2023</div>
+</div>
+
+<script>
+const BANKS = {
+  ch1: [
+    {q:"What does the concept of 'Arbitrability' refer to?", opts:["The enforceability of Arbitral Awards across Jurisdictions","The determination of matters that can be resolved through Arbitration","The procedure to appoint an Arbitrator","The confidentiality of Arbitration Proceedings"], ans:1},
+    {q:"What is the status of the Award given by a Lok Adalat?", opts:["It can be appealed in Higher Courts","It is advisory in nature","It is Final, Binding, and deemed to be a Court's Decree","It is subject to review by the Arbitral Tribunal"], ans:2},
+    {q:"Which of the following reflects the Flexibility of Arbitration?", opts:["Parties have no say in the Arbitration Process","Parties can customize Rules and Procedures","Arbitrators are assigned by the Court","Formal Litigation Rules apply strictly"], ans:1},
+    {q:"What is the time limit to challenge the appointment of an Arbitrator?", opts:["7 days from becoming aware of grounds for challenge","15 days from becoming aware of grounds for challenge","30 days from becoming aware of grounds for challenge","There is no time limit specified"], ans:1},
+    {q:"Which of the following is NOT a type of Mediation as per Section 2(h) of the Mediation Act, 2023?", opts:["Pre-Litigation Mediation","Online Mediation","Court-Ordered Mediation","Community Mediation"], ans:2},
+    {q:"Which statement is true about a Conciliation Officer's Authority?", opts:["They can force parties to accept their suggestions","They act as Arbitrators in disputes","They can enforce settlements unilaterally","They merely offer their services and suggest amicable solutions"], ans:3},
+    {q:"Which of the following Rules facilitates the Process of Mediation under the Companies Act, 2013?", opts:["Companies (Mediation and Conciliation) Rules, 2015","Companies (Mediation and Conciliation) Rules, 2016","National Mediation Rules, 2017","Corporate Dispute Mediation Rules, 2018"], ans:1},
+    {q:"Who appoints a Mediator in a Mediation Process?", opts:["Only the Court","Only the Mediator Service Provider","The Parties or a Mediation Service Provider","The Government"], ans:2},
+    {q:"Which of the following best describes the nature of mediation?", opts:["Mediation is mandatory and determined by the court","Mediation is imposed by a third party","Mediation is compulsory for all disputes","Mediation is voluntary and self-determined by the parties involved"], ans:3},
+    {q:"What happens when Mediation fails to reach a settlement?", opts:["The Mediator forces a solution on the parties","A Non-Settlement Report is prepared and submitted without revealing details about the reasons for failure","The Mediator declares the dispute over and provides no further options","The Mediator imposes a ruling and concludes the process"], ans:1},
+    {q:"Negotiation is most effective when:", opts:["Both parties are rigid in their demands","One party dominates the discussion","Both parties are willing to adjust and accommodate","External authorities enforce a resolution"], ans:2},
+    {q:"Why are Communication Skills considered key to successful Negotiation?", opts:["They allow one party to dominate the other","They ensure the Negotiation Process remains open and effective","They eliminate the need for compromise","They focus only on formal agreements"], ans:1},
+    {q:"National Lok Adalats are held:", opts:["Every week across the Country","Annually in Specific Courts","Four times a year on a single day in all Courts of the Country","Monthly in District-Level Courts"], ans:2},
+    {q:"What is the Primary Objective of Gram Nyayalayas?", opts:["To replace High Courts in rural areas","To centralize legal proceedings in rural areas","To promote Alternative Dispute Resolution mechanisms exclusively","To provide inexpensive and quick Justice to rural people at their doorsteps"], ans:3},
+  ],
+  ch2: [
+    {q:"What is the outcome of an Arbitration Process called?", opts:["Arbitration Report","Arbitral Award","Arbitral Summary","Judicial Decree"], ans:1},
+    {q:"When did the Arbitration and Conciliation Act, 1996 come into force?", opts:["January 1, 1996","August 15, 1996","August 22, 1996","December 31, 1996"], ans:2},
+    {q:"Under Section 36 of the Arbitration and Conciliation Act, 1996, what status is granted to an Arbitral Award?", opts:["A Civil Court-issued Decree","A Provisional Order","A Non-Binding Recommendation","A Mediation Settlement"], ans:0},
+    {q:"According to Section 7 of the Arbitration and Conciliation Act, 1996, an Arbitration Agreement must:", opts:["Be approved by a Court","Be in writing","Be verbal and notarized","Specify only future disputes"], ans:1},
+    {q:"When does the need for a Substitute Arbitrator arise under Section 15?", opts:["When the mandate of an Arbitrator terminates","When the Arbitration process is completed","When a party requests a change in Arbitrators","When a new agreement is signed"], ans:0},
+    {q:"Under Section 2(1)(f), an Arbitration is classified as 'International Commercial Arbitration' if:", opts:["The dispute is commercial in nature, regardless of parties' nationalities","At least one party is a foreign national, body corporate, or government","The dispute involves only foreign entities","The Arbitration is held outside India"], ans:1},
+    {q:"Which of the following is NOT a requirement for entering into an Arbitration Agreement?", opts:["Attaining the age of majority","Being of sound mind","Being authorized by a Lawyer","Not being disqualified by Law"], ans:2},
+    {q:"Which of the following is NOT considered a valid form of Arbitration Agreement under Sec. 7(4)?", opts:["A document signed by both parties","An oral agreement between parties","An exchange of letters or telegrams indicating an agreement","An exchange of claims and defences where agreement is alleged by one party and not denied by the other"], ans:1},
+    {q:"Which example clause is NOT a valid Arbitration Agreement?", opts:["Disputes may be settled by Arbitration if parties mutually agree at the time of the dispute","All disputes shall be referred to Arbitration, and the decision shall be binding","The Arbitrator's decision on all disputes arising from this agreement shall be final and binding","Disputes will be referred to Arbitration as the sole method of resolution"], ans:0},
+    {q:"Which of the following demonstrates a valid Arbitration Agreement?", opts:["A written contract signed by both parties without any Arbitration Clause","An email exchange confirming Arbitration Rules and Mutual Agreement to arbitrate","An oral agreement where both parties verbally agree to arbitrate disputes","A contract mentioning disputes may be arbitrated but requiring further consent"], ans:1},
+    {q:"What does the principle of incorporation by reference enable in a contract?", opts:["Inclusion of terms from a secondary document into the main contract","Inclusion of unrelated terms into a contract","Automatic validation of all referenced clauses without specific mention","Omission of standard terms to simplify contracts"], ans:0},
+    {q:"Which of the following is NOT one of the approaches Courts take when addressing Defective Arbitration Clauses?", opts:["Declaring the Clause invalid for vagueness","Severing the defective part and enforcing the valid portion","Modifying the Clause to provide reasonable meaning","Replacing the Clause with Litigation Proceedings"], ans:3},
+    {q:"What is the primary purpose of the Doctrine of Separability in Arbitration?", opts:["To promote Litigation as a primary dispute resolution method","To ensure Arbitration Clauses are invalid if the main contract is invalid","To treat the Arbitration Clause as independent of the main contract","To terminate Arbitration Agreements automatically upon breach of the main contract"], ans:2},
+    {q:"Which of the following statement is NOT true regarding the termination of an Arbitration Agreement?", opts:["Parties can terminate an Arbitration Agreement by mutual consent","Arbitration Agreements automatically terminate upon breach of the principal contract","Termination of the principal contract through novation extinguishes the Arb. Agreement","Arb. Agreements are enforceable by or against the legal representatives of deceased parties"], ans:1},
+    {q:"What is the primary purpose of Multi-tiered dispute resolution clauses?", opts:["To encourage early settlement and avoid costly Litigation or Arbitration","To mandate Arbitration as the only mode of dispute resolution","To ensure disputes are resolved only by top management","To limit the use of mediation in contractual disputes"], ans:0},
+    {q:"What is the primary purpose of the Notice of Arbitration as per Section 21?", opts:["To request Court intervention","To communicate the claims raised by one party","To appoint a Lawyer","To settle disputes through Negotiation"], ans:1},
+    {q:"According to Section 12 of the Arbitration and Conciliation Act, 1996, under what circumstances can an Arbitrator be challenged?", opts:["Failure to disclose any past or present relationship or interest that could affect impartiality","Lack of legal knowledge","Delay in the proceedings","Disagreement on the Arbitration procedure"], ans:0},
+    {q:"What happens if an Arbitrator withdraws from office for reasons suitable to them?", opts:["The Court must approve the withdrawal","The parties can agree on a new Arbitrator without Court intervention","The mandate of the Arbitrator is automatically terminated","The Arbitrator is penalized"], ans:2},
+    {q:"According to Section 18, what are the basic Principles of Natural Justice for Arbitrators?", opts:["Not to rely on inadmissible documents, not to hear in the absence of one party, and not to decide secretly","Arbitrators can make decisions solely based on the Evidence Act, 1872","Arbitrators must follow strict guidelines and cannot deviate from them","Arbitrators are bound by procedural rules set by the Tribunal itself"], ans:0},
+    {q:"In an ex-parte proceeding, what must the Arbitral Tribunal ensure?", opts:["Treat the respondent's failure to appear as an admission of allegations","Decide solely based on the claimant's submissions","Decide the matter on the merits and evidence available","Postpone the proceedings indefinitely"], ans:2},
+    {q:"What is the difference between the 'seat' and 'venue' in Arbitration?", opts:["The seat refers to the geographical location, while the venue refers to the legal system governing Arbitration","The seat refers to the legal system governing Arbitration, while the venue refers to the geographical location where proceedings can be conducted","Both seat and venue mean the same thing","The seat governs the Arbitrators' appointments, while the venue governs the hearings"], ans:1},
+    {q:"In an International Commercial Arbitration under Section 28(1)(b)(i), how is the applicable Substantive Law determined?", opts:["By the Law designated by the parties as applicable to the substance of the dispute","By the Arbitral Tribunal's discretion, without party input","By the procedural Laws of the Arbitration venue","By Indian Substantive Law"], ans:0},
+    {q:"What does the Latin phrase 'ex aequo et bono' mean?", opts:["In strict accordance with the Law","According to what is fair and good","In compliance with procedural rules","Based on the Principles of Justice and Morality"], ans:1},
+    {q:"What is an Arbitral Award?", opts:["A temporary decision on procedural matters","A final decision that conclusively decides the rights and liabilities of the parties","An interim order issued by the Arbitral Tribunal","A draft decision subject to the parties' approval"], ans:1},
+    {q:"What is the purpose of an Additional Award under Section 33(5)?", opts:["To address claims left out of the Initial Award","To revisit the Final Award entirely","To modify the interest or costs determined in the Original Award","To terminate Arbitration proceedings"], ans:0},
+    {q:"If an arbitral tribunal delivers a signed copy of the award to the wrong person in a large organisation, what is the consequence?", opts:["The award becomes invalid","The tribunal must issue a new award","Limitation periods under Sections 33 and 34 do not begin","The parties must agree on a new date of delivery"], ans:2},
+    {q:"Which of the following is NOT a ground for setting aside an Arbitral Award under Section 34(2)?", opts:["A party was under incapacity","The Arbitral Award contains a minor clerical error","The Arbitration Agreement is not valid under applicable Law","The Arbitral Award is in conflict with the Public Policy of India"], ans:1},
+    {q:"Which part of the Arbitration and Conciliation Act, 1996 governs foreign awards?", opts:["Part I","Part II","Both Part I and Part II","Neither Part I nor Part II"], ans:1},
+    {q:"Under what condition can an Arbitral Award be challenged in India according to Section 4?", opts:["The Arbitration must be seated in India","The Arbitration must involve at least one Indian party","The Arbitration must be governed by foreign Law","The Arbitration must be seated outside India"], ans:0},
+    {q:"What key principle allows the Arbitration Agreement to be treated as separate from the main contract?", opts:["Public Policy Principle","Principle of Separability","Doctrine of Estoppel","Principle of mutual consent"], ans:1},
+    {q:"Why is notice an essential part of due process in Arbitration?", opts:["To expedite the proceedings","To ensure proper management of Arbitration Proceedings","To limit the roles of both parties equally","To restrict communication between parties"], ans:1},
+    {q:"What is meant by the 'scope of the Arbitral Tribunal's Jurisdiction'?", opts:["The authority of the Arbitral Tribunal to select Arbitrators","The areas and disputes the Arbitral Tribunal is empowered to decide","The procedures to be followed in Arbitration","The duration of the Arbitration Process"], ans:1},
+    {q:"What is the importance of Party Autonomy in Arbitration according to the Arbitration and Conciliation Act, 1996?", opts:["It allows the parties to decide key aspects like the composition of the Arbitral Tribunal and Procedure","It provides the Court full authority to determine Arbitration matters","It limits the Tribunal to following only statutory provisions","It enables the Tribunal to create new procedures outside legal frameworks"], ans:0},
+    {q:"What is Objective Arbitrability based on?", opts:["Parties' Agreement","Law, specifically subject matters which the Law deems inarbitrable","Court's discretion","Intellectual Property disputes"], ans:1},
+    {q:"Which school of thought prevails in India regarding the interpretation of Public Policy?", opts:["The broad view school","The narrow view school","The strict interpretation school","The conservative view school"], ans:0},
+    {q:"Under Section 36 of the Arbitration and Conciliation Act, 1996, what happens when an application for setting aside an Arbitral Award is filed?", opts:["The Arbitral Award is immediately unenforceable","The Award remains enforceable unless a specific stay is granted","The Court automatically rejects the Award","The Court automatically upholds the Award without appeal"], ans:1},
+    {q:"What is required for the Doctrine of Res Judicata and Estoppel to apply to an Arbitral Award?", opts:["Triple Identity Test of parties, cause of action, and subject-matter","Only the identity of parties","Identity of cause of action alone","Any Court judgement"], ans:0},
+    {q:"What determines whether an Arbitral Award is considered a Domestic or Foreign Award under the Arbitration and Conciliation Act, 1996?", opts:["The nationality of the Arbitrators","The seat of Arbitration","The location of the parties","The type of dispute"], ans:1},
+    {q:"Under Section 34, when can a Court unconditionally stay an Arbitral Award?", opts:["If the Arbitration Agreement or contract was induced by fraud or corruption","If the Arbitrator did not follow the proper procedure","If the challenge is filed beyond the prescribed timeline","If the parties agree to the stay"], ans:0},
+    {q:"Under Section 48, Enforcement of a Foreign Award may be refused if:", opts:["The parties were not properly notified of the Arbitration proceedings","The Award deals with matters beyond the scope of the submission to Arbitration","The composition of the Arbitral Authority or procedure was not in accordance with the agreement of the parties","All of the above"], ans:3},
+    {q:"Which of the following is NOT part of the concept of Public Policy under Section 48?", opts:["Making of the Award was induced by Fraud or Corruption","Violation of Fundamental Policy of Indian Law","Review of the Arbitral Award on merits","Conflict with the most basic notions of Morality or Justice"], ans:2},
+    {q:"Which of the following is NOT a condition for Enforcement of a Foreign Award under Section 57(1)?", opts:["The Award has been made in pursuance of a valid Arbitration submission","The subject-matter of the award is capable of settlement by Arbitration under Indian Law","The Award has been made in the country where the Arbitral Tribunal had jurisdiction","The Award has been made under the Law governing Arbitration, irrespective of the Law applicable to the Arbitration"], ans:3},
+  ],
+  ch3: [
+    {q:"What is a Key Characteristic of Ad hoc Arbitration?", opts:["It is conducted under the supervision of an Arbitration Institution","It offers parties a high degree of control and flexibility","It requires mandatory Government oversight","It mandates the use of predefined procedural Rules"], ans:1},
+    {q:"What is a key feature of Institutional Arbitration?", opts:["The proceedings are regulated by the Government","Parties draft and manage the Arbitration process themselves","The Arbitration is conducted under the Rules framed by the chosen Arbitral Institution","Arbitrators are always selected by the Judiciary"], ans:2},
+    {q:"Which of the following is a potential issue with Ad hoc Arbitration in the Enforcement of Foreign Awards?", opts:["Procedural disputes can arise due to the absence of Institutional Rules","Foreign Awards are not recognized under Ad hoc Arbitration","Foreign Awards in Ad hoc Arbitration are limited to commercial disputes only","Enforcement of Foreign Awards requires institutional approval"], ans:0},
+    {q:"What is the maximum time limit prescribed for Fast Track Arbitration proceedings under Section 29B?", opts:["3 months","6 months","12 months","18 months"], ans:1},
+    {q:"What is the key difference between Domestic and International Arbitration?", opts:["Domestic Arbitration always involves International Treaties","International Arbitration involves parties from the same country","Domestic Arbitration is governed solely by the Laws of one country, while International Arbitration may involve International Treaties or Rules","Domestic Arbitration is more complex than International Arbitration"], ans:2},
+    {q:"What is Contractual Arbitration?", opts:["Arbitration conducted after the dispute arises without prior agreement","Arbitration included as part of a contract to address future disputes","Arbitration required by Law in specific industries","Arbitration conducted under Government supervision"], ans:1},
+    {q:"Which section of the Act defines 'International Commercial Arbitration'?", opts:["Section 2(1)(a)","Section 2(1)(c)","Section 2(1)(f)","Section 34"], ans:2},
+    {q:"Which of the following correctly describes a Domestic Arbitral Award?", opts:["An Award made outside the Jurisdiction where Enforcement is sought","An Award made within the jurisdiction where the Arbitration takes place, regardless of the nationality of the parties","An Award made in a country different from where it will be enforced","An Award made under the New York Convention, regardless of seat"], ans:1},
+    {q:"What is one of the most common grounds for refusing the Enforcement of Domestic Awards in International Arbitration?", opts:["Violation of the Public Policy of the enforcing state","Inconsistency with International Legal Regimes","Lack of Arbitration Agreements","Inability to waive Sovereign Immunity"], ans:0},
+    {q:"Which international convention primarily governs the enforcement of foreign arbitral awards?", opts:["Vienna Convention","Geneva Convention","New York Convention","ICSID Convention"], ans:2},
+    {q:"What issue complicates the Enforcement of Foreign Arbitral Awards when a State or State-owned entity is involved?", opts:["Sovereign Immunity","Public Policy concerns","Lack of Arbitration Agreements","Inconsistent Judicial Decisions"], ans:0},
+    {q:"What are Interim Measures of Protection designed to do?", opts:["Preserve the Status quo or prevent harm to a party during Arbitration","Speed up the Arbitration Process","Provide a Final Judgment on the merits","Only be used in Domestic Arbitration"], ans:0},
+    {q:"What is the importance of Interim Awards in managing Arbitration Proceedings?", opts:["They replace the need for Final Awards in most cases","They ensure fair and efficient Arbitration by protecting parties' rights and preserving integrity","They focus solely on reducing the Tribunal's workload","They are used only in Domestic Arbitration"], ans:1},
+    {q:"Which document is NOT required under Section 47 for enforcing a Foreign Arbitral Award?", opts:["The Original Award or a duly authenticated copy","The original Arbitration Agreement or a duly certified copy","A notarized statement from the Arbitrator","Any translations if the Award or Agreement is not in English"], ans:2},
+    {q:"Where must a petition for Enforcement of a Foreign Arbitral Award in India be filed?", opts:["The Supreme Court of India","The High Court with territorial jurisdiction over the party or their assets","Any District Court","The Court where the Arbitration Agreement was signed"], ans:1},
+    {q:"How do procedural delays in the Indian Judicial System impact the Enforcement of Foreign Arbitral Awards?", opts:["They have no effect on Enforcement","They streamline Arbitration-related matters","They significantly affect the timeliness of Enforcement","They prevent resistance from Indian parties"], ans:2},
+  ],
+  ch4: [
+    {q:"What is a key role of the Conciliator in the Dispute Resolution Process?", opts:["Declaring one party as right and the other as wrong","Providing expert advice and suggesting options for resolution","Making a binding decision for the parties","Engaging with the evidence and deciding the dispute"], ans:1},
+    {q:"How does the flexibility of Conciliation benefit the parties?", opts:["The Conciliator is bound by strict rules of evidence","The Conciliator can adopt procedural methods that suit the dispute and ensure cost-effectiveness","The process strictly follows rigid formulas and procedures","The flexibility allows the Conciliator to impose binding decisions"], ans:1},
+    {q:"How is the number of Conciliators different from the number of Arbitrators under Indian Arbitration Law?", opts:["The number of Conciliators cannot be odd","The number of Conciliators can be even or odd, unlike Arbitrators who must always be odd in number","Both Conciliators and Arbitrators must always be odd in number","Arbitrators must act individually, whereas Conciliators act jointly"], ans:1},
+    {q:"What Principles guide the conduct of a Conciliator during the proceedings?", opts:["Objectivity, fairness, and justice","Strict adherence to Procedural Law and Evidence","Confidentiality, binding decisions, and penalties","Speed, efficiency, and financial penalties"], ans:0},
+    {q:"What is the key advantage of Conciliation over traditional Litigation?", opts:["It always ensures a binding decision","It eliminates the need for any legal procedures","It is faster and ensures equitable resolution of disputes","It provides mandatory compensation to both parties"], ans:2},
+    {q:"According to Section 64(1), how is a single Conciliator appointed?", opts:["The court appoints the Conciliator","Each party appoints one Conciliator, who jointly appoint the third","The parties mutually agree on the name of the Conciliator","An institution appoints the Conciliator by default"], ans:2},
+    {q:"What specific Laws does Section 66 exempt Conciliators from adhering to?", opts:["The Indian Penal Code","The Indian Evidence Act, 1872 and the Code of Civil Procedure, 1908","The Arbitration and Conciliation Act, 1996","The Consumer Protection Act, 1986"], ans:1},
+    {q:"What is the primary purpose of Section 70 in Conciliation proceedings?", opts:["To facilitate settlement while protecting sensitive and confidential information shared during the process","To ensure Conciliators have unrestricted access to all information","To require Conciliators to act only on the basis of public information","To prevent any sharing of factual information between the parties"], ans:0},
+    {q:"What happens once the Conciliator authenticates the Settlement Agreement?", opts:["It becomes subject to further negotiation","It is provided to the parties and is final and binding","The parties can choose to ignore the agreement","It requires Court registration for validity"], ans:1},
+    {q:"What is the legal status of a Settlement Agreement under Section 74 of the Act?", opts:["It is equivalent to an Arbitral Award under Section 30","It is equivalent to a regular contract","It is subject to mandatory Court review before enforcement","It is only enforceable after Arbitration proceedings"], ans:0},
+    {q:"Which of the following is NOT a way Conciliation proceedings may terminate under Section 76 of the Act?", opts:["By signing a Settlement Agreement","By a written declaration from the Conciliator","By a written declaration from the parties","By an oral agreement between the parties to discontinue the process"], ans:3},
+    {q:"Who can participate in Conciliation proceedings under the Arbitration and Conciliation Act, 1996?", opts:["Any individual or entity, regardless of legal capacity","Only individuals who are above the age of 21","Only parties legally competent to contract","Any individual who is involved in the dispute"], ans:2},
+    {q:"What makes Conciliation more appealing compared to Arbitration or Court Proceedings?", opts:["It involves mandatory Court approval for settlements","It is less formal, quicker, and often more cost-effective","It always leads to binding decisions","It limits the qualifications of Conciliators to legal professionals only"], ans:1},
+    {q:"What is a common misuse of Conciliation in Judicial Proceedings?", opts:["Parties use Conciliation to bypass legal obligations","Conciliation is often used as a delay tactic to prolong Litigation","Courts refuse to refer cases to Conciliation","Parties misuse Conciliation to overturn judicial decisions"], ans:1},
+  ]
+};
+
+// Build "all" bank with labels
+BANKS.all = [];
+['ch1','ch2','ch3','ch4'].forEach(ch=>{
+  const label={ch1:'Ch.1',ch2:'Ch.2',ch3:'Ch.3',ch4:'Ch.4'}[ch];
+  BANKS[ch].forEach((q,i)=>{
+    BANKS.all.push({...q, label:`${label} · Q${i+1}`});
+  });
+});
+
+const state = {};
+['ch1','ch2','ch3','ch4','all'].forEach(ch=>{
+  state[ch] = { answers: {}, score: 0, answered: 0 };
+});
+
+const LETTERS = ['A','B','C','D'];
+
+function buildQuiz(ch) {
+  const wrap = document.getElementById('quiz-'+ch);
+  wrap.innerHTML = '';
+  BANKS[ch].forEach((item, qi) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = `qcard-${ch}-${qi}`;
+    const label = item.label ? `<span class="tag tag-blue" style="margin-left:8px;font-size:9px;">${item.label}</span>` : '';
+    card.innerHTML = `
+      <div class="q-head">
+        <span class="q-num">Q${qi+1}</span>
+        <span class="q-text">${item.q}${label}</span>
+      </div>
+      <div class="q-body">
+        <div class="opt-list" id="opts-${ch}-${qi}">
+          ${item.opts.map((o,oi)=>`
+            <div class="opt" id="opt-${ch}-${qi}-${oi}" onclick="choose('${ch}',${qi},${oi})">
+              <span class="opt-letter">${LETTERS[oi]}</span>
+              <span class="opt-text">${o}</span>
+            </div>`).join('')}
+        </div>
+        <div class="feedback" id="fb-${ch}-${qi}"></div>
+      </div>`;
+    wrap.appendChild(card);
+  });
+}
+
+function choose(ch, qi, oi) {
+  const s = state[ch];
+  if (s.answers[qi] !== undefined) return; // already answered
+  s.answers[qi] = oi;
+  const correct = BANKS[ch][qi].ans;
+  const isRight = oi === correct;
+  if (isRight) s.score++;
+  s.answered++;
+
+  // Style options
+  for (let i = 0; i < BANKS[ch][qi].opts.length; i++) {
+    const el = document.getElementById(`opt-${ch}-${qi}-${i}`);
+    el.style.cursor = 'default';
+    if (i === oi && isRight) { el.classList.add('correct'); }
+    else if (i === oi && !isRight) { el.classList.add('wrong'); }
+    else if (i === correct) { el.classList.add('reveal-correct'); }
+  }
+
+  // Feedback
+  const fb = document.getElementById(`fb-${ch}-${qi}`);
+  fb.className = `feedback show ${isRight ? 'f-correct' : 'f-wrong'}`;
+  fb.innerHTML = isRight
+    ? `✓ Correct! <strong>${BANKS[ch][qi].opts[correct]}</strong> is the right answer.`
+    : `✗ Incorrect. The correct answer is: <strong>${BANKS[ch][qi].opts[correct]}</strong>`;
+
+  updateProgress(ch);
+  if (s.answered === BANKS[ch].length) showScore(ch);
+}
+
+function updateProgress(ch) {
+  const s = state[ch];
+  const total = BANKS[ch].length;
+  const pct = Math.round((s.answered / total) * 100);
+  const prog = document.getElementById('progress-'+ch);
+  if (prog) { prog.style.display = 'flex'; }
+  const pf = document.getElementById('pf-'+ch);
+  if (pf) pf.style.width = pct+'%';
+  const pt = document.getElementById('pt-'+ch);
+  if (pt) pt.textContent = `${s.answered} / ${total} answered · ${s.score} correct`;
+}
+
+function showScore(ch) {
+  const s = state[ch];
+  const total = BANKS[ch].length;
+  const pct = Math.round((s.score / total) * 100);
+  const grade = pct >= 75 ? '🏆 Excellent!' : pct >= 50 ? '👍 Good effort' : '📖 Keep revising';
+  const panel = document.getElementById('score-'+ch);
+  panel.className = 'score-panel show';
+  panel.innerHTML = `
+    <div class="sp-title">Final Score</div>
+    <div class="sp-score">${s.score} <span style="font-size:22px;color:rgba(255,255,255,.4)">/ ${total}</span></div>
+    <div class="sp-sub">${grade} · ${pct}% correct</div>
+    <div class="sp-bar-wrap"><div class="sp-bar" style="width:${pct}%"></div></div>
+    <div class="sp-actions">
+      <button class="action-btn" onclick="resetChapter('${ch}')">↺ Try Again</button>
+    </div>`;
+  panel.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function resetChapter(ch) {
+  state[ch] = { answers: {}, score: 0, answered: 0 };
+  const panel = document.getElementById('score-'+ch);
+  if (panel) panel.className = 'score-panel';
+  const prog = document.getElementById('progress-'+ch);
+  if (prog) prog.style.display = 'none';
+  buildQuiz(ch);
+}
+
+function resetAll() {
+  ['ch1','ch2','ch3','ch4','all'].forEach(ch => resetChapter(ch));
+}
+
+// NAV
+function showSection(s, btn) {
+  document.getElementById('cover').style.display = s === 'cover' ? 'flex' : 'none';
+  document.getElementById('main').style.display = s === 'cover' ? 'none' : 'block';
+  document.querySelectorAll('#nav .ntab').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const map = {ch1:'t-ch1', ch2:'t-ch2', ch3:'t-ch3', ch4:'t-ch4', all:'t-all'};
+  if (s !== 'cover') switchTab(map[s] || 't-ch1');
+}
+
+function switchTab(id) {
+  document.querySelectorAll('.tsec').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tbtn').forEach(b => b.classList.remove('active'));
+  const sec = document.getElementById(id);
+  if (sec) sec.classList.add('active');
+  const map2 = {'t-ch1':0,'t-ch2':1,'t-ch3':2,'t-ch4':3,'t-all':4};
+  const btns = document.querySelectorAll('.tbtn');
+  if (btns[map2[id]] !== undefined) btns[map2[id]].classList.add('active');
+}
+
+// INIT
+document.getElementById('cover').style.display = 'flex';
+document.getElementById('main').style.display = 'none';
+['ch1','ch2','ch3','ch4','all'].forEach(ch => buildQuiz(ch));
+</script>
+</body></html>
